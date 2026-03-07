@@ -1,0 +1,71 @@
+# ══════════════════════════════════════════════════════════════════════
+# Configurazione Streamlit
+# Questo file viene letto automaticamente da Streamlit all'avvio.
+# Deve trovarsi nella cartella .streamlit/ alla radice del progetto.
+# Documentazione: https://docs.streamlit.io/develop/api-reference/configuration
+# ══════════════════════════════════════════════════════════════════════
+
+[server]
+# headless = true → disabilita l'apertura automatica del browser.
+# Utile in ambienti server/Docker dove non c'è un desktop grafico.
+# In locale Streamlit apre comunque il browser, ma non mostra il dialog
+# "Do you want to open this in a browser?"
+headless = true
+
+# port = 8501 → porta HTTP su cui il server Streamlit ascolta.
+# Per accedere all'app: http://localhost:8501
+# Cambiare se la 8501 è già occupata da un altro processo.
+port = 8501
+
+# enableCORS = false → disabilita Cross-Origin Resource Sharing.
+# In produzione andrebbe configurato con i domini autorizzati,
+# ma per sviluppo locale lo disabilitiamo per evitare problemi
+# con iframe, immagini esterne e richieste cross-origin.
+enableCORS = false
+
+# enableXsrfProtection = false → disabilita la protezione XSRF
+# (Cross-Site Request Forgery). In sviluppo locale non serve;
+# in produzione dietro un reverse proxy (es. Nginx) è il proxy
+# stesso a gestire la sicurezza CSRF.
+enableXsrfProtection = false
+
+
+[theme]
+# Tema grafico dell'applicazione Streamlit.
+# Questi valori sovrascrivono il tema di default e vengono
+# applicati a tutti i widget (bottoni, input, sidebar, ecc.).
+
+# primaryColor → colore principale usato per:
+#   - Checkbox attivi, slider, bottoni primari
+#   - Barre di progresso, link attivi
+#   "#3498db" = blu "Peter River" (palette Flat UI)
+primaryColor = "#3498db"
+
+# backgroundColor → sfondo della pagina principale (area di contenuto).
+# "#f0f2f5" = grigio chiaro, simile allo sfondo di Facebook/LinkedIn,
+# che riduce l'affaticamento visivo rispetto al bianco puro.
+backgroundColor = "#f0f2f5"
+
+# secondaryBackgroundColor → sfondo dei widget secondari:
+#   - Sidebar, expander, container con bordo
+#   "#ffffff" = bianco puro, crea contrasto con il grigio di sfondo
+#   e mette in risalto la sidebar.
+secondaryBackgroundColor = "#ffffff"
+
+# textColor → colore del testo principale (titoli, paragrafi, label).
+# "#2c3e50" = blu-grigio scuro (palette Flat UI), più morbido
+# del nero puro (#000) e migliore per la leggibilità su schermo.
+textColor = "#2c3e50"
+
+# font → famiglia di font usata in tutta l'app.
+# "sans serif" usa il font di sistema (Segoe UI su Windows,
+# -apple-system su macOS, ecc.) per un look nativo e veloce
+# (nessun download di font da Google Fonts).
+font = "sans serif"
+
+
+[browser]
+# gatherUsageStats = false → disabilita l'invio di statistiche
+# anonime di utilizzo ai server di Streamlit.
+# Per privacy e GDPR, lo teniamo disabilitato.
+gatherUsageStats = false

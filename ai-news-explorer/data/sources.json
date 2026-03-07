@@ -1,0 +1,92 @@
+[
+    {
+        "source": "Twitter (X)",
+        "type": "social_media",
+        "url": "https://twitter.com/"
+    },
+    {
+        "source": "Facebook",
+        "type": "social_media",
+        "url": "https://facebook.com/"
+    },
+    {
+        "source": "Instagram",
+        "type": "social_media",
+        "url": "https://instagram.com/"
+    },
+    {
+        "source": "TikTok",
+        "type": "social_media",
+        "url": "https://tiktok.com/"
+    },
+    {
+        "source": "Ansa",
+        "type": "news_website",
+        "url": "https://www.ansa.it/sito/ansait_rss.xml"
+    },
+    {
+        "source": "Il Post",
+        "type": "news_website",
+        "url": "https://www.ilpost.it/feed/"
+    },
+    {
+        "source": "Hardware Upgrade",
+        "type": "news_website",
+        "url": "https://www.hwupgrade.it/rss_news.xml"
+    },
+    {
+        "source": "Punto Informatico",
+        "type": "news_website",
+        "url": "https://www.punto-informatico.it/feed/"
+    },
+    {
+        "source": "Le Scienze",
+        "type": "news_website",
+        "url": "https://www.lescienze.it/rss/all/rss2.0.xml"
+    },
+    {
+        "source": "TechCrunch",
+        "type": "blog",
+        "url": "https://techcrunch.com/"
+    },
+    {
+        "source": "Wired",
+        "type": "blog",
+        "url": "https://www.wired.com/"
+    },
+    {
+        "source": "The Verge",
+        "type": "blog",
+        "url": "https://www.theverge.com/"
+    },
+    {
+        "source": "Medium",
+        "type": "blog",
+        "url": "https://medium.com/"
+    },
+    {
+        "source": "YouTube",
+        "type": "video_platform",
+        "url": "https://youtube.com/"
+    },
+    {
+        "source": "Vimeo",
+        "type": "video_platform",
+        "url": "https://vimeo.com/"
+    },
+    {
+        "source": "Spotify",
+        "type": "podcast",
+        "url": "https://spotify.com/"
+    },
+    {
+        "source": "Apple Podcasts",
+        "type": "podcast",
+        "url": "https://podcasts.apple.com/"
+    },
+    {
+        "source": "Various RSS Feeds",
+        "type": "rss_feed",
+        "url": "https://example.com/rss"
+    }
+]

@@ -1,0 +1,50 @@
+[
+    {
+        "category": "Social Media",
+        "sources": [
+            "Twitter (X)",
+            "Facebook",
+            "Instagram",
+            "TikTok"
+        ]
+    },
+    {
+        "category": "News Websites",
+        "sources": [
+            "Ansa",
+            "Il Post",
+            "Hardware Upgrade",
+            "Punto Informatico",
+            "Le Scienze"
+        ]
+    },
+    {
+        "category": "Blogs and Online Magazines",
+        "sources": [
+            "TechCrunch",
+            "Wired",
+            "The Verge",
+            "Medium"
+        ]
+    },
+    {
+        "category": "Video Platforms",
+        "sources": [
+            "YouTube",
+            "Vimeo"
+        ]
+    },
+    {
+        "category": "Podcasts",
+        "sources": [
+            "Spotify",
+            "Apple Podcasts"
+        ]
+    },
+    {
+        "category": "RSS Feeds",
+        "sources": [
+            "Various news outlets providing RSS feeds for real-time updates."
+        ]
+    }
+]
