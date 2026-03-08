@@ -17,6 +17,7 @@ from components.home import home_page
 from components.categories import display_categories
 from components.brainless import brainless_page
 from components.preferences import preferences_page
+from components.custom_sections import custom_section_page
 
 
 # ── Configurazione pagina ────────────────────────────────────────────
@@ -59,7 +60,8 @@ if "user_preferences" not in st.session_state:
         "excluded_reasons": {},
         "category_time": {},
         "enabled_paid_sources": [],
-        "custom_sources": []
+        "custom_sources": [],
+        "custom_sections": []
     }
 
 
@@ -71,14 +73,33 @@ with st.sidebar:
     st.title("🌐 AI News Explorer")
     st.markdown("---")
 
-    # Radio button per navigazione a 4 voci.
+    # Radio button per navigazione a 5 voci.
     # Il valore selezionato viene salvato automaticamente in session_state
     # e letto ad ogni rerun per decidere quale pagina mostrare.
     page = st.radio(
         "📍 Navigazione",
-        ["🏠 Home", "📂 Categorie", "🧠 Brainless", "⚙️ Preferenze"],
+        ["🏠 Home", "📂 Categorie", "⭐ Le Mie Sezioni", "🧠 Brainless", "⚙️ Preferenze"],
         index=0,    # Pagina di default: Home
         label_visibility="collapsed"   # Nasconde l'etichetta "📍 Navigazione"
+    )
+
+    st.markdown("---")
+
+    # Selettore lingua per traduzione sintetica degli articoli
+    st.selectbox(
+        "🌐 Lingua traduzione",
+        [
+            "🇮🇹 Italiano (originale)",
+            "🇬🇧 English",
+            "🇫🇷 Français",
+            "🇩🇪 Deutsch",
+            "🇪🇸 Español",
+            "🇵🇹 Português",
+            "🇯🇵 日本語",
+            "🇨🇳 中文",
+        ],
+        index=0,
+        key="translation_lang",
     )
 
     st.markdown("---")
@@ -92,6 +113,8 @@ if page == "🏠 Home":
     home_page()
 elif page == "📂 Categorie":
     display_categories()
+elif page == "⭐ Le Mie Sezioni":
+    custom_section_page()
 elif page == "🧠 Brainless":
     brainless_page()
 elif page == "⚙️ Preferenze":

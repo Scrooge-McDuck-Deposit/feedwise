@@ -412,7 +412,38 @@ class RecommenderAgent:
 
         for idx, row in df.iterrows():
             score = 50.0
-            interactions = random.randint(20, 500)
+
+            # Seed deterministica per articolo (stesso articolo = stesso bonus)
+            article_hash = int(hashlib.md5(
+                (row.get("title", "") + row.get("source", "")).encode()
+            ).hexdigest()[:8], 16)
+            rng = random.Random(article_hash)
+
+            # Bonus basato sulla fonte (alcune fonti producono contenuti più virali)
+            source_bonus = rng.uniform(-8, 15)
+            score += source_bonus
+
+            # Bonus lunghezza riassunto (articoli più dettagliati)
+            summary = row.get("summary", "") or ""
+            if len(summary) > 150:
+                score += rng.uniform(3, 10)
+            elif len(summary) > 80:
+                score += rng.uniform(1, 5)
+
+            # Bonus recenza dalla data di pubblicazione
+            pub = row.get("published", "")
+            if pub:
+                recency_bonus = rng.uniform(2, 12)
+                score += recency_bonus
+
+            # Bonus per titoli "forti" (lunghezza e keywords)
+            title = row.get("title", "")
+            if len(title) > 60:
+                score += rng.uniform(2, 8)
+            elif len(title) > 30:
+                score += rng.uniform(0, 4)
+
+            interactions = rng.randint(50, 800)
 
             # Boost per categorie con tempo di permanenza
             if row["category"] in cat_time:
@@ -426,11 +457,11 @@ class RecommenderAgent:
             if row["id"] in dislikes:
                 score -= 30
 
-            # Componente casuale per varietà
-            score += random.uniform(0, 20)
+            # Componente casuale leggero
+            score += rng.uniform(0, 8)
 
-            # Clamp a minimo 1 (evita punteggi negativi)
-            df.at[idx, "trend_score"] = max(score, 1)
+            # Clamp tra 1 e 100
+            df.at[idx, "trend_score"] = max(min(score, 100), 1)
             df.at[idx, "interactions"] = max(interactions, 1)
 
         return df
@@ -520,6 +551,40 @@ class RecommenderAgent:
         df = df[mask]
         if df.empty:
             return df
+
+        df = self.calculate_trend_score(df)
+        df = df.sort_values("trend_score", ascending=False)
+
+        return df.head(max_results).reset_index(drop=True)
+
+    def get_articles_by_sources(self, source_names, max_results=20):
+        """
+        Restituisce articoli filtrati per una lista di fonti specifiche.
+
+        Usato dalle sezioni personalizzate dell'utente.
+
+        Args:
+            source_names (list): Lista di nomi fonti da includere
+            max_results (int): Max articoli da restituire
+
+        Returns:
+            DataFrame: Articoli delle fonti selezionate, ordinati per trend_score
+        """
+        df = self.fetch_articles_from_rss()
+        if df.empty:
+            return df
+
+        df = df[df["source"].isin(source_names)]
+        if df.empty:
+            return df
+
+        excluded = self.user_preferences.get("excluded_sources", [])
+        if excluded:
+            df = df[~df["source"].isin(excluded)]
+
+        dislikes = self.user_preferences.get("dislikes", [])
+        if dislikes:
+            df = df[~df["id"].isin(dislikes)]
 
         df = self.calculate_trend_score(df)
         df = df.sort_values("trend_score", ascending=False)

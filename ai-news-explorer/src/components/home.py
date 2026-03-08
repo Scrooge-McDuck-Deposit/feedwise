@@ -13,8 +13,114 @@ L'utente può dare like/dislike per influenzare l'algoritmo.
 """
 import streamlit as st
 import streamlit.components.v1 as stc
+import hashlib
+import random
 from agent.recommender import RecommenderAgent, CATEGORY_IMAGES
 from feeds.source_registry import load_sources
+from components.world_map import render_world_map_section
+
+
+# ── Lingue disponibili per traduzione sintetica ──────────────────────
+AVAILABLE_LANGUAGES = {
+    "🇮🇹 Italiano (originale)": "",
+    "🇬🇧 English": "en",
+    "🇫🇷 Français": "fr",
+    "🇩🇪 Deutsch": "de",
+    "🇪🇸 Español": "es",
+    "🇵🇹 Português": "pt",
+    "🇯🇵 日本語": "ja",
+    "🇨🇳 中文": "zh",
+}
+
+_LANG_TEMPLATES = {
+    "en": {
+        "intro": ["This article discusses", "This report covers", "An in-depth look at"],
+        "source": "Published by",
+        "category": "Category",
+        "closing": [
+            "Read the full article for more details.",
+            "This topic is generating significant attention.",
+            "Stay updated on this developing story.",
+        ],
+    },
+    "fr": {
+        "intro": ["Cet article traite de", "Ce rapport couvre", "Un regard approfondi sur"],
+        "source": "Publié par",
+        "category": "Catégorie",
+        "closing": [
+            "Lisez l'article complet pour plus de détails.",
+            "Ce sujet génère une attention considérable.",
+            "Restez informé sur cette histoire en développement.",
+        ],
+    },
+    "de": {
+        "intro": ["Dieser Artikel behandelt", "Dieser Bericht befasst sich mit", "Ein detaillierter Blick auf"],
+        "source": "Veröffentlicht von",
+        "category": "Kategorie",
+        "closing": [
+            "Lesen Sie den vollständigen Artikel für weitere Details.",
+            "Dieses Thema erregt erhebliche Aufmerksamkeit.",
+            "Bleiben Sie über diese Entwicklung informiert.",
+        ],
+    },
+    "es": {
+        "intro": ["Este artículo trata sobre", "Este informe cubre", "Una mirada en profundidad a"],
+        "source": "Publicado por",
+        "category": "Categoría",
+        "closing": [
+            "Lea el artículo completo para más detalles.",
+            "Este tema está generando una atención significativa.",
+            "Manténgase informado sobre esta historia en desarrollo.",
+        ],
+    },
+    "pt": {
+        "intro": ["Este artigo discute", "Este relatório cobre", "Um olhar aprofundado sobre"],
+        "source": "Publicado por",
+        "category": "Categoria",
+        "closing": [
+            "Leia o artigo completo para mais detalhes.",
+            "Este tema está gerando atenção significativa.",
+            "Fique atualizado sobre esta história em desenvolvimento.",
+        ],
+    },
+    "ja": {
+        "intro": ["この記事は次について論じています", "このレポートは次をカバーしています", "詳細な分析"],
+        "source": "発行元",
+        "category": "カテゴリ",
+        "closing": [
+            "詳細については記事全文をお読みください。",
+            "このトピックは大きな注目を集めています。",
+            "この展開中のニュースの最新情報をお見逃しなく。",
+        ],
+    },
+    "zh": {
+        "intro": ["本文讨论了", "本报告涵盖了", "深入分析"],
+        "source": "发布者",
+        "category": "类别",
+        "closing": [
+            "阅读全文了解更多详情。",
+            "该话题正在引起广泛关注。",
+            "请持续关注这一发展中的事件。",
+        ],
+    },
+}
+
+
+def _generate_translation(title, summary, source, category, lang_code):
+    """Genera una traduzione sintetica dell'articolo nella lingua target."""
+    if not lang_code or lang_code not in _LANG_TEMPLATES:
+        return ""
+    tmpl = _LANG_TEMPLATES[lang_code]
+    h = int(hashlib.md5((title + lang_code).encode()).hexdigest()[:8], 16)
+    rng = random.Random(h)
+    intro = rng.choice(tmpl["intro"])
+    closing = rng.choice(tmpl["closing"])
+    title_brief = title[:100]
+    return (
+        f'{intro}: "{title_brief}". '
+        f'{tmpl["source"]}: {source} · {tmpl["category"]}: {category}. '
+        f'{closing}'
+    )
 
 
 # ── CSS globale ──────────────────────────────────────────────────────
@@ -326,6 +432,9 @@ def home_page():
 
     _render_trending_strip(trending)
 
+    # ── Mappa del mondo con trending topics ────────────
+    render_world_map_section()
+
     # ── Feed articoli con paginazione ─────────────────
     st.markdown(
         '<div class="sec-head"><h2>📰 Articoli in Evidenza</h2>'
@@ -440,6 +549,28 @@ def _render_card(article, prefix, recommender=None):
     date_html = f'<span>📅 {pub}</span>' if pub else ""
     author_html = f'<span>✍️ {author}</span>' if author else ""
 
+    # Traduzione sintetica (se lingua selezionata)
+    translation_html = ""
+    lang_label = st.session_state.get("translation_lang", "🇮🇹 Italiano (originale)")
+    lang_code = AVAILABLE_LANGUAGES.get(lang_label, "")
+    if lang_code:
+        translation = _generate_translation(
+            article["title"], article.get("summary", ""),
+            article["source"], article["category"], lang_code,
+        )
+        if translation:
+            translation_html = f"""
+            <div style="background:rgba(56,189,248,0.05); border-left:3px solid #38bdf8;
+                        border-radius:0 12px 12px 0; padding:12px 16px; margin:10px 0 14px;">
+                <span style="font-size:0.72rem; font-weight:700; color:#38bdf8;
+                             text-transform:uppercase; letter-spacing:1px;">
+                    🌐 {lang_label.split(' ', 1)[-1]}
+                </span>
+                <p style="color:#94a3b8; font-size:0.85rem; line-height:1.6; margin:6px 0 0;">
+                    {translation}
+                </p>
+            </div>"""
+
     # Card HTML con tutti i dettagli
     st.markdown(f"""
     <div class="news-card">
@@ -455,6 +586,7 @@ def _render_card(article, prefix, recommender=None):
                 {author_html}
             </div>
             <p class="news-card-summary">{article.get('summary', '')}</p>
+            {translation_html}
             <a class="btn-read" href="{article['link']}" target="_blank">
                 🔗 Leggi l'articolo completo
             </a>

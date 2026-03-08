@@ -258,6 +258,92 @@ def preferences_page():
     st.markdown("---")
 
     # ===========================================================
+    # SEZIONE 3B: SEZIONI PERSONALIZZATE
+    # L'utente può creare sezioni personalizzate scegliendo
+    # le fonti che desidera raggruppare insieme. Ogni sezione
+    # apparirà nel menu di navigazione laterale.
+    # ===========================================================
+    st.header("⭐ Crea Sezione Personalizzata")
+    st.caption("Scegli le fonti che vuoi raggruppare in una sezione tutta tua.")
+
+    if "custom_sections" not in st.session_state.user_preferences:
+        st.session_state.user_preferences["custom_sections"] = []
+
+    # Raccogli tutti i nomi delle fonti disponibili (registro + custom)
+    all_available_sources = []
+    for category, source_list in sources.items():
+        if isinstance(source_list, list):
+            for s in source_list:
+                all_available_sources.append(s["name"])
+        elif isinstance(source_list, dict):
+            for name in source_list.keys():
+                all_available_sources.append(name)
+    for cs in prefs.get("custom_sources", []):
+        if cs["name"] not in all_available_sources:
+            all_available_sources.append(cs["name"])
+
+    with st.form("create_custom_section_form", clear_on_submit=True):
+        section_name = st.text_input(
+            "Nome della sezione",
+            placeholder="es. Tech & Scienza, Le mie preferite…"
+        )
+        selected_sources = st.multiselect(
+            "Seleziona le fonti da includere",
+            options=sorted(all_available_sources),
+            help="Scegli almeno una fonte da includere nella sezione."
+        )
+        submitted_section = st.form_submit_button("⭐ Crea Sezione")
+
+        if submitted_section:
+            if section_name and selected_sources:
+                existing_names = [
+                    s["name"] for s in prefs.get("custom_sections", [])
+                ]
+                if section_name in existing_names:
+                    st.error(f"Esiste già una sezione con il nome '{section_name}'.")
+                else:
+                    new_section = {
+                        "name": section_name,
+                        "sources": selected_sources,
+                    }
+                    prefs["custom_sections"].append(new_section)
+                    st.success(f"⭐ Sezione '{section_name}' creata con {len(selected_sources)} fonti!")
+                    st.rerun()
+            else:
+                st.error("Inserisci un nome e seleziona almeno una fonte.")
+
+    # Lista sezioni personalizzate già create
+    user_sections = prefs.get("custom_sections", [])
+    if user_sections:
+        st.markdown("**⭐ Le tue sezioni:**")
+        for i, sec in enumerate(user_sections):
+            with st.expander(f"⭐ {sec['name']} — {len(sec['sources'])} fonti"):
+                st.write(", ".join(sec["sources"]))
+                col_edit, col_del = st.columns([1, 1])
+                with col_edit:
+                    # Modifica fonti della sezione
+                    new_sources = st.multiselect(
+                        "Modifica fonti",
+                        options=sorted(all_available_sources),
+                        default=sec["sources"],
+                        key=f"edit_section_{i}"
+                    )
+                    if st.button("💾 Salva modifiche", key=f"save_section_{i}"):
+                        if new_sources:
+                            prefs["custom_sections"][i]["sources"] = new_sources
+                            st.toast(f"Sezione '{sec['name']}' aggiornata!")
+                            st.rerun()
+                        else:
+                            st.error("Seleziona almeno una fonte.")
+                with col_del:
+                    if st.button("🗑️ Elimina sezione", key=f"del_section_{i}"):
+                        prefs["custom_sections"].pop(i)
+                        st.toast(f"Sezione '{sec['name']}' eliminata.")
+                        st.rerun()
+
+    st.markdown("---")
+
+    # ===========================================================
     # SEZIONE 4: ESCLUDI FONTI
     # Elenca tutte le fonti (dal registro + custom) con un checkbox
     # per escluderle. Se esclusa, la fonte non apparirà nel feed.
@@ -323,7 +409,8 @@ def preferences_page():
             st.session_state.user_preferences = {
                 "likes": [], "dislikes": [], "excluded_sources": [],
                 "excluded_reasons": {}, "category_time": {},
-                "enabled_paid_sources": [], "custom_sources": []
+                "enabled_paid_sources": [], "custom_sources": [],
+                "custom_sections": []
             }
             st.toast("Preferenze resettate!")
             st.rerun()

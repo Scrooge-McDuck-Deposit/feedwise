@@ -10,7 +10,8 @@ def init_session():
             "excluded_sources": [],
             "excluded_reasons": {},
             "category_time": {},
-            "enabled_paid_sources": []
+            "enabled_paid_sources": [],
+            "custom_sections": []
         }
     if "feed_index" not in st.session_state:
         st.session_state.feed_index = 0
@@ -23,7 +24,7 @@ def reset_session():
     st.session_state.user_preferences = {
         "likes": [], "dislikes": [], "excluded_sources": [],
         "excluded_reasons": {}, "category_time": {},
-        "enabled_paid_sources": []
+        "enabled_paid_sources": [], "custom_sections": []
     }
     st.session_state.feed_index = 0
     st.session_state.selected_category = None

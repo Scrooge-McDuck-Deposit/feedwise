@@ -170,6 +170,52 @@ DEFAULT_SOURCES = {
         "Gambero Rosso": {"url": "https://www.gamberorosso.it/feed/", "type": "rss", "paid": False},
         "Dissapore": {"url": "https://www.dissapore.com/feed/", "type": "rss", "paid": False},
     },
+
+    # ── Cybersecurity ──
+    # Fonti specializzate in sicurezza informatica e hacking.
+    "Cybersecurity": {
+        "The Hacker News": {"url": "https://feeds.feedburner.com/TheHackersNews", "type": "rss", "paid": False},
+        "Krebs on Security": {"url": "https://krebsonsecurity.com/feed/", "type": "rss", "paid": False},
+        "BleepingComputer": {"url": "https://www.bleepingcomputer.com/feed/", "type": "rss", "paid": False},
+        "Dark Reading": {"url": "https://www.darkreading.com/rss.xml", "type": "rss", "paid": False},
+        "SecurityWeek": {"url": "https://www.securityweek.com/feed/", "type": "rss", "paid": False},
+        "Threatpost": {"url": "https://threatpost.com/feed/", "type": "rss", "paid": False},
+    },
+
+    # ── Energia e Risorse ──
+    "Energia e Risorse": {
+        "Rinnovabili.it Energia": {"url": "https://www.rinnovabili.it/energia/feed/", "type": "rss", "paid": False},
+        "QualEnergia": {"url": "https://www.qualenergia.it/feed/", "type": "rss", "paid": False},
+        "Energy Monitor": {"url": "https://www.energymonitor.ai/feed/", "type": "rss", "paid": False},
+    },
+
+    # ── Educazione ──
+    "Educazione": {
+        "Orizzonte Scuola": {"url": "https://www.orizzontescuola.it/feed/", "type": "rss", "paid": False},
+        "Tecnica della Scuola": {"url": "https://www.tecnicadellascuola.it/feed", "type": "rss", "paid": False},
+        "Inside Higher Ed": {"url": "https://www.insidehighered.com/rss/feed", "type": "rss", "paid": False},
+    },
+
+    # ── Spazio e Astronomia ──
+    "Spazio e Astronomia": {
+        "Space.com": {"url": "https://www.space.com/feeds/all", "type": "rss", "paid": False},
+        "NASA Breaking News": {"url": "https://www.nasa.gov/news-release/feed/", "type": "rss", "paid": False},
+        "SpaceNews": {"url": "https://spacenews.com/feed/", "type": "rss", "paid": False},
+        "ESA News": {"url": "https://www.esa.int/rssfeed/Our_Activities/Space_News", "type": "rss", "paid": False},
+    },
+
+    # ── Startup e Innovazione ──
+    "Startup e Innovazione": {
+        "StartupItalia": {"url": "https://startupitalia.eu/feed", "type": "rss", "paid": False},
+        "EU-Startups": {"url": "https://www.eu-startups.com/feed/", "type": "rss", "paid": False},
+        "TechStartups": {"url": "https://techstartups.com/feed/", "type": "rss", "paid": False},
+    },
+
+    # ── Diritto e Legge ──
+    "Diritto e Legge": {
+        "Altalex": {"url": "https://www.altalex.com/documents/rss", "type": "rss", "paid": False},
+        "Il Quotidiano Giuridico": {"url": "https://www.quotidianogiuridico.it/feed/", "type": "rss", "paid": False},
+    },
 }
 
 
