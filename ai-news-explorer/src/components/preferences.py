@@ -292,10 +292,23 @@ def preferences_page():
             options=sorted(all_available_sources),
             help="Scegli almeno una fonte da includere nella sezione."
         )
+        custom_rss_input = st.text_area(
+            "📡 Feed RSS manuali (uno per riga)",
+            placeholder="https://esempio.com/feed/rss\nhttps://altrosito.com/rss",
+            help="Inserisci URL di feed RSS aggiuntivi da includere nella sezione, uno per riga.",
+        )
         submitted_section = st.form_submit_button("⭐ Crea Sezione")
 
         if submitted_section:
-            if section_name and selected_sources:
+            # Parsa i feed RSS manuali
+            manual_feeds = []
+            if custom_rss_input and custom_rss_input.strip():
+                for line in custom_rss_input.strip().splitlines():
+                    url = line.strip()
+                    if url and url.startswith("http"):
+                        manual_feeds.append(url)
+
+            if section_name and (selected_sources or manual_feeds):
                 existing_names = [
                     s["name"] for s in prefs.get("custom_sections", [])
                 ]
@@ -305,20 +318,41 @@ def preferences_page():
                     new_section = {
                         "name": section_name,
                         "sources": selected_sources,
+                        "rss_feeds": manual_feeds,
                     }
                     prefs["custom_sections"].append(new_section)
-                    st.success(f"⭐ Sezione '{section_name}' creata con {len(selected_sources)} fonti!")
+                    n_src = len(selected_sources)
+                    n_rss = len(manual_feeds)
+                    parts = []
+                    if n_src:
+                        parts.append(f"{n_src} fonti")
+                    if n_rss:
+                        parts.append(f"{n_rss} feed RSS")
+                    st.success(f"⭐ Sezione '{section_name}' creata con {' + '.join(parts)}!")
                     st.rerun()
             else:
-                st.error("Inserisci un nome e seleziona almeno una fonte.")
+                st.error("Inserisci un nome e seleziona almeno una fonte o un feed RSS.")
 
     # Lista sezioni personalizzate già create
     user_sections = prefs.get("custom_sections", [])
     if user_sections:
         st.markdown("**⭐ Le tue sezioni:**")
         for i, sec in enumerate(user_sections):
-            with st.expander(f"⭐ {sec['name']} — {len(sec['sources'])} fonti"):
-                st.write(", ".join(sec["sources"]))
+            n_sources = len(sec.get("sources", []))
+            n_rss = len(sec.get("rss_feeds", []))
+            label_parts = []
+            if n_sources:
+                label_parts.append(f"{n_sources} fonti")
+            if n_rss:
+                label_parts.append(f"{n_rss} feed RSS")
+            label = " + ".join(label_parts) if label_parts else "vuota"
+            with st.expander(f"⭐ {sec['name']} — {label}"):
+                if sec.get("sources"):
+                    st.write("**Fonti:** " + ", ".join(sec["sources"]))
+                if sec.get("rss_feeds"):
+                    st.write("**Feed RSS manuali:**")
+                    for rss_url in sec["rss_feeds"]:
+                        st.code(rss_url, language=None)
                 col_edit, col_del = st.columns([1, 1])
                 with col_edit:
                     # Modifica fonti della sezione
@@ -369,28 +403,91 @@ def preferences_page():
 
     excluded = prefs["excluded_sources"]
 
-    for name in all_source_names:
-        col1, col2 = st.columns([3, 2])
-        is_excluded = name in excluded
-        with col1:
-            # Checkbox con key unica "excl_{nome}"
-            # Se selezionato → aggiunge alla lista escluse
-            # Se deselezionato → rimuove dalla lista
-            if st.checkbox(f"❌ {name}", value=is_excluded, key=f"excl_{name}"):
-                if name not in excluded:
-                    excluded.append(name)
-            else:
+    # Toggle switch tra modalità predefinite e manuale
+    excl_mode = st.radio(
+        "Modalità di esclusione",
+        ["📋 Fonti predefinite", "✍️ Inserimento manuale"],
+        horizontal=True,
+        key="excl_mode_toggle",
+        label_visibility="collapsed",
+    )
+
+    if excl_mode == "📋 Fonti predefinite":
+        # --- Modalità: lista fonti predefinite con checkbox ---
+        search_excl = st.text_input(
+            "🔍 Cerca fonte da escludere",
+            placeholder="Digita per filtrare…",
+            key="search_exclude_source",
+        )
+
+        if search_excl and search_excl.strip():
+            filtered_names = [n for n in all_source_names if search_excl.lower() in n.lower()]
+        else:
+            filtered_names = all_source_names
+
+        for name in filtered_names:
+            col1, col2 = st.columns([3, 2])
+            is_excluded = name in excluded
+            with col1:
+                if st.checkbox(f"❌ {name}", value=is_excluded, key=f"excl_{name}"):
+                    if name not in excluded:
+                        excluded.append(name)
+                else:
+                    if name in excluded:
+                        excluded.remove(name)
+            with col2:
                 if name in excluded:
-                    excluded.remove(name)
-        with col2:
-            # Campo motivo visibile solo se la fonte è esclusa
-            if name in excluded:
-                reason = st.text_input(
-                    "Motivo (opzionale)",
-                    value=prefs["excluded_reasons"].get(name, ""),
-                    key=f"reason_{name}"
-                )
-                prefs["excluded_reasons"][name] = reason
+                    reason = st.text_input(
+                        "Motivo (opzionale)",
+                        value=prefs["excluded_reasons"].get(name, ""),
+                        key=f"reason_{name}"
+                    )
+                    prefs["excluded_reasons"][name] = reason
+    else:
+        # --- Modalità: inserimento manuale ---
+        st.caption("Inserisci il nome esatto di una fonte che vuoi escludere, anche se non compare nella lista predefinita.")
+
+        with st.form("manual_exclude_form", clear_on_submit=True):
+            manual_exclude_name = st.text_input(
+                "Nome della fonte",
+                placeholder="es. Nome Fonte Da Escludere",
+            )
+            manual_exclude_reason = st.text_input(
+                "Motivo (opzionale)",
+                placeholder="es. Contenuti non interessanti",
+            )
+            submitted_excl = st.form_submit_button("🚫 Escludi questa fonte")
+            if submitted_excl:
+                if manual_exclude_name and manual_exclude_name.strip():
+                    src_name = manual_exclude_name.strip()
+                    if src_name not in excluded:
+                        excluded.append(src_name)
+                        if manual_exclude_reason and manual_exclude_reason.strip():
+                            prefs["excluded_reasons"][src_name] = manual_exclude_reason.strip()
+                        st.success(f"🚫 '{src_name}' aggiunta alle fonti escluse.")
+                        st.rerun()
+                    else:
+                        st.warning(f"'{src_name}' è già esclusa.")
+                else:
+                    st.error("Inserisci il nome della fonte.")
+
+    # Mostra fonti attualmente escluse con possibilità di rimuoverle
+    if excluded:
+        st.markdown("**Fonti attualmente escluse:**")
+        for i, ex_name in enumerate(excluded):
+            col1, col2 = st.columns([4, 1])
+            with col1:
+                reason_text = prefs["excluded_reasons"].get(ex_name, "")
+                if reason_text:
+                    st.write(f"🚫 **{ex_name}** — _{reason_text}_")
+                else:
+                    st.write(f"🚫 **{ex_name}**")
+            with col2:
+                if st.button("↩️", key=f"unexcl_{i}_{ex_name}"):
+                    excluded.remove(ex_name)
+                    prefs["excluded_reasons"].pop(ex_name, None)
+                    st.toast(f"'{ex_name}' rimossa dalle esclusioni.")
+                    st.rerun()
 
     # Salva la lista aggiornata nelle preferenze
     prefs["excluded_sources"] = excluded

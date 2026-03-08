@@ -17,6 +17,7 @@ import hashlib
 import random
 import re
 from datetime import datetime
+import streamlit as st
 
 
 # ── Immagini di fallback per categoria ───────────────────────────────
@@ -25,12 +26,12 @@ from datetime import datetime
 # Le URL usano parametri Unsplash (w=600, h=300, fit=crop) per
 # ottenere immagini ottimizzate senza bisogno di resize lato client.
 CATEGORY_IMAGES = {
-    "Notizie Generaliste": "https://images.unsplash.com/photo-1504711434969-e33886168d6c?w=600&h=300&fit=crop",
+    "Notizie Generaliste": "https://images.unsplash.com/photo-1495020689067-958852a7765e?w=600&h=300&fit=crop",
     "Notizie Internazionali": "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=600&h=300&fit=crop",
     "Tecnologia": "https://images.unsplash.com/photo-1518770660439-4636190af475?w=600&h=300&fit=crop",
     "Scienza": "https://images.unsplash.com/photo-1507413245164-6160d8298b31?w=600&h=300&fit=crop",
     "Economia e Finanza": "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=600&h=300&fit=crop",
-    "Sport": "https://images.unsplash.com/photo-1461896836934-bd45ba8a64e0?w=600&h=300&fit=crop",
+    "Sport": "https://images.unsplash.com/photo-1517649763962-0c623066013b?w=600&h=300&fit=crop",
     "Intrattenimento": "https://images.unsplash.com/photo-1603190287605-e6ade32fa852?w=600&h=300&fit=crop",
     "Salute e Benessere": "https://images.unsplash.com/photo-1505751172876-fa1923c5c528?w=600&h=300&fit=crop",
     "Viaggi e Lifestyle": "https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=600&h=300&fit=crop",
@@ -38,9 +39,28 @@ CATEGORY_IMAGES = {
     "Gaming": "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=600&h=300&fit=crop",
     "Ambiente": "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=600&h=300&fit=crop",
     "Auto e Motori": "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=600&h=300&fit=crop",
-    "Moda e Design": "https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=600&h=300&fit=crop",
+    "Moda e Design": "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=600&h=300&fit=crop",
     "Cucina e Food": "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=600&h=300&fit=crop",
     "Meme e Humor": "https://images.unsplash.com/photo-1531259683007-016a7b628fc3?w=600&h=300&fit=crop",
+    "Cybersecurity": "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=600&h=300&fit=crop",
+    "Energia e Risorse": "https://images.unsplash.com/photo-1509391366360-2e959784a276?w=600&h=300&fit=crop",
+    "Educazione": "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=600&h=300&fit=crop",
+    "Spazio e Astronomia": "https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?w=600&h=300&fit=crop",
+    "Startup e Innovazione": "https://images.unsplash.com/photo-1559136555-9303baea8ebd?w=600&h=300&fit=crop",
+    "Diritto e Legge": "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=600&h=300&fit=crop",
+    "Altro": "https://images.unsplash.com/photo-1557804506-669a67965ba0?w=600&h=300&fit=crop",
+    "Medicina e Sanità": "https://images.unsplash.com/photo-1579684385127-1ef15d508118?w=600&h=300&fit=crop",
+    "Ingegneria e Costruzioni": "https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=600&h=300&fit=crop",
+    "Informatica e Data Science": "https://images.unsplash.com/photo-1555949963-aa79dcee981c?w=600&h=300&fit=crop",
+    "Contabilità e Fiscalità": "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=600&h=300&fit=crop",
+    "Architettura e Urbanistica": "https://images.unsplash.com/photo-1487958449943-2429e8be8625?w=600&h=300&fit=crop",
+    "Marketing e Comunicazione": "https://images.unsplash.com/photo-1533750349088-cd871a92f312?w=600&h=300&fit=crop",
+    "Risorse Umane e Lavoro": "https://images.unsplash.com/photo-1521791136064-7986c2920216?w=600&h=300&fit=crop",
+    "Ricerca Accademica": "https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?w=600&h=300&fit=crop",
+    "Psicologia e Scienze Sociali": "https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=600&h=300&fit=crop",
+    "Farmacia e Biotecnologie": "https://images.unsplash.com/photo-1585435557343-3b348031c681?w=600&h=300&fit=crop",
+    "Veterinaria": "https://images.unsplash.com/photo-1548767797-d8c844163c4c?w=600&h=300&fit=crop",
+    "Agraria e Alimentazione": "https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=600&h=300&fit=crop",
 }
 
 # ── Fonti meme da Reddit ─────────────────────────────────────────────
@@ -57,6 +77,33 @@ MEME_SOURCES = [
     {"url": "https://www.reddit.com/r/comics/.rss", "name": "comics"},
     {"url": "https://www.reddit.com/r/memes_of_the_dank/.rss", "name": "memes_of_the_dank"},
 ]
+
+
+@st.cache_data(ttl=900, show_spinner=False)
+def _parse_feed_cached(url):
+    """Fetch e parsing di un singolo feed RSS, con cache di 15 minuti."""
+    try:
+        feed = feedparser.parse(url)
+        entries = []
+        for entry in feed.entries:
+            e = {
+                "title": entry.get("title", ""),
+                "link": entry.get("link", ""),
+                "summary": entry.get("summary", ""),
+                "published": entry.get("published", ""),
+                "author": entry.get("author", ""),
+                "media_content": [{"url": m.get("url", ""), "type": m.get("type", "")} for m in entry.media_content] if hasattr(entry, "media_content") and entry.media_content else [],
+                "media_thumbnail": [{"url": t.get("url", "")} for t in entry.media_thumbnail] if hasattr(entry, "media_thumbnail") and entry.media_thumbnail else [],
+                "enclosures": [{"href": enc.get("href", ""), "type": enc.get("type", "")} for enc in entry.enclosures] if hasattr(entry, "enclosures") and entry.enclosures else [],
+                "content": [{"value": c.get("value", "")} for c in entry.content] if hasattr(entry, "content") and entry.content else [],
+                "links": [{"href": l.get("href", ""), "type": l.get("type", "")} for l in entry.links] if hasattr(entry, "links") and entry.links else [],
+                "author_detail": {"name": entry.author_detail.get("name", "")} if hasattr(entry, "author_detail") and entry.author_detail else None,
+                "authors": [{"name": a.get("name", "")} for a in entry.authors] if hasattr(entry, "authors") and entry.authors else [],
+            }
+            entries.append(e)
+        return entries
+    except Exception:
+        return []
 
 
 class RecommenderAgent:
@@ -187,18 +234,78 @@ class RecommenderAgent:
             return re.sub(r'<[^>]+>', '', author).strip()
 
         # Oggetto author_detail (formato Atom)
-        if hasattr(entry, "author_detail") and entry.author_detail:
-            name = entry.author_detail.get("name", "")
+        author_detail = entry.get("author_detail")
+        if author_detail:
+            name = author_detail.get("name", "")
             if name:
                 return name
 
         # Lista autori (articoli con più firme)
-        if hasattr(entry, "authors") and entry.authors:
-            names = [a.get("name", "") for a in entry.authors if a.get("name")]
+        authors = entry.get("authors", [])
+        if authors:
+            names = [a.get("name", "") for a in authors if a.get("name")]
             if names:
                 return ", ".join(names)
 
         return ""
+
+    @staticmethod
+    def _summarize_text(raw_html, title="", max_words=300):
+        """
+        Genera un riassunto pulito dal contenuto RSS.
+
+        Rimuove i tag HTML, elimina frasi duplicate col titolo,
+        e tronca al confine di frase più vicino entro *max_words*.
+        Se il testo originale è più corto del limite, viene restituito
+        per intero senza tagli.
+
+        Args:
+            raw_html: Testo grezzo (può contenere HTML)
+            title: Titolo dell'articolo, per evitare ripetizioni
+            max_words: Numero massimo di parole nel riassunto
+
+        Returns:
+            str: Riassunto pulito
+        """
+        if not raw_html:
+            return ""
+
+        # Rimuovi tag HTML
+        text = re.sub(r"<[^>]+>", " ", raw_html)
+        # Normalizza spazi e decode entità comuni
+        text = text.replace("&amp;", "&").replace("&nbsp;", " ")
+        text = text.replace("&lt;", "<").replace("&gt;", ">")
+        text = text.replace("&quot;", '"').replace("&apos;", "'")
+        text = re.sub(r"\s+", " ", text).strip()
+
+        if not text:
+            return ""
+
+        # Rimuovi la prima frase se è identica al titolo
+        if title:
+            title_clean = title.strip().rstrip(".")
+            if text.lower().startswith(title_clean.lower()):
+                text = text[len(title_clean):].lstrip(" .–—-:,")
+
+        words = text.split()
+        if len(words) <= max_words:
+            return text
+
+        # Tronca a max_words e cerca il confine di frase
+        truncated = " ".join(words[:max_words])
+
+        # Cerca l'ultimo punto/esclamativo/interrogativo
+        last_period = -1
+        for i, ch in enumerate(truncated):
+            if ch in ".!?":
+                last_period = i
+
+        if last_period > len(truncated) // 3:
+            # Taglia al confine di frase
+            return truncated[: last_period + 1]
+        else:
+            # Nessuna frase completa: tronca e aggiungi ellissi
+            return truncated.rstrip(" ,;:-–—") + "…"
 
     def _format_date(self, date_str):
         """
@@ -297,10 +404,9 @@ class RecommenderAgent:
                     continue
 
                 try:
-                    # feedparser.parse() fa la richiesta HTTP e parsa XML/Atom
-                    feed = feedparser.parse(url)
+                    entries = _parse_feed_cached(url)
 
-                    for entry in feed.entries[:max_per_source]:
+                    for entry in entries[:max_per_source]:
                         # ID univoco: hash MD5 di link+titolo per evitare duplicati
                         article_id = hashlib.md5(
                             (entry.get("link", "") + entry.get("title", "")).encode()
@@ -311,9 +417,12 @@ class RecommenderAgent:
                         if not image:
                             image = CATEGORY_IMAGES.get(str(category), "")
 
-                        # Rimuovi HTML dal riassunto e tronca a 200 caratteri
-                        summary_raw = entry.get("summary", "")[:500]
-                        summary = re.sub(r'<[^>]+>', '', summary_raw).strip()[:200]
+                        # Riassunto AI: testo pulito con limite di parole
+                        summary = self._summarize_text(
+                            entry.get("summary", ""),
+                            entry.get("title", ""),
+                            max_words=300,
+                        )
 
                         # Formatta la data di pubblicazione
                         pub_raw = entry.get("published", "")
@@ -341,8 +450,8 @@ class RecommenderAgent:
             if custom.get("name") in self.user_preferences.get("excluded_sources", []):
                 continue
             try:
-                feed = feedparser.parse(custom["url"])
-                for entry in feed.entries[:max_per_source]:
+                entries = _parse_feed_cached(custom["url"])
+                for entry in entries[:max_per_source]:
                     article_id = hashlib.md5(
                         (entry.get("link", "") + entry.get("title", "")).encode()
                     ).hexdigest()
@@ -351,8 +460,11 @@ class RecommenderAgent:
                     if not image:
                         image = CATEGORY_IMAGES.get(custom.get("category", ""), "")
 
-                    summary_raw = entry.get("summary", "")[:500]
-                    summary = re.sub(r'<[^>]+>', '', summary_raw).strip()[:200]
+                    summary = self._summarize_text(
+                        entry.get("summary", ""),
+                        entry.get("title", ""),
+                        max_words=300,
+                    )
 
                     pub_raw = entry.get("published", "")
                     pub_formatted = self._format_date(pub_raw)
@@ -638,13 +750,11 @@ class RecommenderAgent:
 
         for source in MEME_SOURCES:
             try:
-                feed = feedparser.parse(source["url"])
-                for entry in feed.entries:
-                    # Raccogli tutto il contenuto HTML dell'entry
+                entries = _parse_feed_cached(source["url"])
+                for entry in entries:
                     content = entry.get("summary", "") or ""
-                    if hasattr(entry, "content") and entry.content:
-                        for c in entry.content:
-                            content += c.get("value", "")
+                    for c in entry.get("content", []):
+                        content += c.get("value", "")
 
                     # Cerca URL con estensioni immagine nel testo
                     img_urls = re.findall(
@@ -658,12 +768,10 @@ class RecommenderAgent:
                         if tag_url.startswith("http") and tag_url not in img_urls:
                             img_urls.append(tag_url)
 
-                    # Cerca in media:content
-                    if hasattr(entry, "media_content") and entry.media_content:
-                        for media in entry.media_content:
-                            u = media.get("url", "")
-                            if u and u not in img_urls:
-                                img_urls.append(u)
+                    for media in entry.get("media_content", []):
+                        u = media.get("url", "")
+                        if u and u not in img_urls:
+                            img_urls.append(u)
 
                     # Filtra immagini inutili (avatar, icone, badge, ecc.)
                     filtered = []

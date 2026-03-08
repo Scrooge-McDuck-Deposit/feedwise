@@ -123,182 +123,216 @@ def _generate_translation(title, summary, source, category, lang_code):
     )
 
 
+def _translate_title(title, lang_code):
+    """Genera una traduzione sintetica del titolo nella lingua target."""
+    if not lang_code or lang_code not in _LANG_TEMPLATES:
+        return ""
+    tmpl = _LANG_TEMPLATES[lang_code]
+    h = int(hashlib.md5((title + lang_code + "title").encode()).hexdigest()[:8], 16)
+    rng = random.Random(h)
+    intro = rng.choice(tmpl["intro"])
+    return f'{intro}: "{title[:120]}"'
+
+
 # ── CSS globale ──────────────────────────────────────────────────────
 # Variabili CSS custom (--var) per coerenza cromatica.
 # Il tema è dark con accent teal (#64ffda) ispirato a Brittany Chiang.
 # Importato una sola volta all'inizio della pagina con unsafe_allow_html.
 GLOBAL_CSS = """
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
 /* ── Variabili colore (dark theme) ────────────────── */
 :root {
-    --bg-card: #111827;            /* sfondo card articoli */
-    --bg-card-hover: #1e293b;      /* sfondo card al hover */
-    --accent: #64ffda;             /* colore primario teal */
-    --accent-dim: rgba(100,255,218,.12);  /* accent con opacità per sfondi */
-    --text-primary: #e2e8f0;       /* testo principale (quasi bianco) */
-    --text-secondary: #94a3b8;     /* testo secondario (grigio medio) */
-    --text-muted: #64748b;         /* testo disattivato (grigio scuro) */
-    --gold: #fbbf24;               /* colore per trend score */
-    --radius: 16px;                /* border-radius standard */
-    --shadow: 0 8px 30px rgba(0,0,0,.35);  /* ombra card */
+    --bg-page: #0a0f1a;
+    --bg-card: #111827;
+    --bg-card-hover: #1a2332;
+    --bg-glass: rgba(17,24,39,.72);
+    --accent: #64ffda;
+    --accent-dim: rgba(100,255,218,.10);
+    --accent-glow: rgba(100,255,218,.18);
+    --text-primary: #e2e8f0;
+    --text-secondary: #94a3b8;
+    --text-muted: #64748b;
+    --gold: #fbbf24;
+    --radius: 18px;
+    --radius-sm: 12px;
+    --shadow: 0 8px 32px rgba(0,0,0,.4);
+    --shadow-lg: 0 16px 48px rgba(0,0,0,.55);
+    --border: rgba(255,255,255,.06);
+    --transition: .3s cubic-bezier(.4,0,.2,1);
 }
 
+/* ── Base ─────────────────────────────────────────── */
+body, .stApp {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+    background: var(--bg-page) !important;
+    color: var(--text-primary) !important;
+}
+.stApp > header { background: transparent !important; }
+
+/* ── Scrollbar globale ────────────────────────────── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(100,255,218,.25); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(100,255,218,.4); }
+
 /* ── Card articolo ────────────────────────────────── */
-/* Layout verticale: immagine in alto, corpo sotto.
-   L'hover alza la card di 5px e intensifica l'ombra
-   per dare feedback visivo tattile. */
 .news-card {
     background: var(--bg-card);
-    border: 1px solid rgba(255,255,255,.04);
+    border: 1px solid var(--border);
     border-radius: var(--radius);
     overflow: hidden;
     margin-bottom: 22px;
     box-shadow: var(--shadow);
-    transition: transform .25s ease, box-shadow .25s ease;
+    transition: transform var(--transition), box-shadow var(--transition), border-color var(--transition);
 }
 .news-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 14px 44px rgba(0,0,0,.5);
-    border-color: rgba(100,255,218,.15);
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--accent-glow);
 }
 .news-card-img {
     width: 100%;
-    max-height: 300px;
-    object-fit: cover;      /* Ritaglia l'immagine per riempire lo spazio */
+    max-height: 280px;
+    object-fit: cover;
     display: block;
 }
 .news-card-body {
-    padding: 20px 22px 18px;
+    padding: 22px 24px 20px;
 }
 .news-card-body h3 {
-    margin: 0 0 6px;
+    margin: 0 0 8px;
     font-size: 1.12rem;
-    line-height: 1.45;
+    font-weight: 600;
+    line-height: 1.5;
     color: var(--text-primary);
+    letter-spacing: -.01em;
 }
 
-/* ── Riga metadati (fonte, categoria, data, autore) ─ */
+/* ── Riga metadati ────────────────────────────────── */
 .news-meta {
     display: flex;
-    flex-wrap: wrap;         /* Su mobile i badge vanno a capo */
+    flex-wrap: wrap;
     align-items: center;
     gap: 8px;
-    margin-bottom: 10px;
-    font-size: .8rem;
+    margin-bottom: 12px;
+    font-size: .78rem;
     color: var(--text-muted);
 }
 
-/* Badge fonte: sfondo teal semitrasparente con testo teal */
 .badge-source {
     background: var(--accent-dim);
     color: var(--accent);
-    padding: 2px 10px;
-    border-radius: 10px;
-    font-weight: 700;
-    font-size: .78rem;
+    padding: 3px 11px;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: .76rem;
+    letter-spacing: .02em;
+    border: 1px solid rgba(100,255,218,.12);
 }
 
-/* Badge fonte a pagamento: gradiente arancio→rosso */
 .badge-paid {
     background: linear-gradient(135deg,#f59e0b,#ef4444);
     color: #fff;
-    padding: 2px 9px;
-    border-radius: 8px;
+    padding: 3px 10px;
+    border-radius: 20px;
     font-size: .72rem;
     font-weight: 700;
 }
 
-/* Badge trend score: sfondo gold semitrasparente */
 .badge-trend {
-    background: rgba(251,191,36,.12);
+    background: rgba(251,191,36,.10);
     color: var(--gold);
-    padding: 2px 9px;
-    border-radius: 8px;
+    padding: 3px 10px;
+    border-radius: 20px;
     font-weight: 700;
-    font-size: .78rem;
+    font-size: .76rem;
+    border: 1px solid rgba(251,191,36,.12);
 }
 
-/* Riassunto articolo */
 .news-card-summary {
     color: var(--text-secondary);
-    font-size: .9rem;
-    line-height: 1.6;
+    font-size: .88rem;
+    line-height: 1.7;
     margin-bottom: 14px;
 }
 
-/* Bottone "Leggi l'articolo completo" con gradiente teal */
+/* ── Bottone "Leggi l'articolo" ───────────────────── */
 .btn-read {
     display: inline-block;
     background: linear-gradient(135deg, var(--accent), #00bfa5);
     color: #0a192f !important;
-    padding: 9px 22px;
-    border-radius: 10px;
+    padding: 10px 24px;
+    border-radius: var(--radius-sm);
     text-decoration: none;
     font-weight: 700;
-    font-size: .86rem;
-    transition: transform .2s, box-shadow .2s;
+    font-size: .84rem;
+    letter-spacing: .02em;
+    transition: transform var(--transition), box-shadow var(--transition);
+    box-shadow: 0 2px 12px rgba(100,255,218,.15);
 }
 .btn-read:hover {
-    transform: scale(1.05);
-    box-shadow: 0 4px 22px rgba(100,255,218,.35);
+    transform: translateY(-1px) scale(1.03);
+    box-shadow: 0 6px 24px rgba(100,255,218,.3);
 }
 
-/* ── Trending strip (hero cards orizzontali) ──────── */
-/* Container con scroll orizzontale e snap per tocco su mobile.
-   Ogni card ha altezza fissa 210px con immagine di sfondo
-   e gradient overlay per leggibilità del testo. */
+/* ── Trending strip ───────────────────────────────── */
 .trending-row {
     display: flex;
-    gap: 16px;
-    overflow-x: auto;            /* Scroll orizzontale */
-    padding-bottom: 8px;
-    margin-bottom: 10px;
-    scroll-snap-type: x mandatory;  /* Snap al bordo delle card */
-    -webkit-overflow-scrolling: touch;  /* Scroll fluido iOS */
+    gap: 18px;
+    overflow-x: auto;
+    padding-bottom: 10px;
+    margin-bottom: 12px;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
 }
-.trending-row::-webkit-scrollbar { height: 6px; }
+.trending-row::-webkit-scrollbar { height: 5px; }
 .trending-row::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 3px; }
 
-/* Singola card trending */
 .trend-hero {
-    flex: 0 0 320px;            /* Larghezza fissa, non si comprime */
-    height: 210px;
+    flex: 0 0 330px;
+    height: 220px;
     position: relative;
     border-radius: var(--radius);
     overflow: hidden;
     cursor: pointer;
     scroll-snap-align: start;
     box-shadow: var(--shadow);
-    transition: transform .3s ease;
+    transition: transform var(--transition), box-shadow var(--transition);
     text-decoration: none !important;
+    border: 1px solid var(--border);
 }
-.trend-hero:hover { transform: scale(1.03); }
+.trend-hero:hover {
+    transform: scale(1.03);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--accent-glow);
+}
 .trend-hero img {
     width: 100%; height: 100%;
     object-fit: cover;
     display: block;
 }
 
-/* Gradient overlay: da trasparente in alto a nero in basso */
 .trend-hero .grad {
     position: absolute;
     inset: 0;
-    background: linear-gradient(0deg, rgba(0,0,0,.82) 0%, rgba(0,0,0,.15) 55%);
+    background: linear-gradient(0deg, rgba(0,0,0,.85) 0%, rgba(0,0,0,.10) 60%);
 }
 
-/* Caption sovrapposta all'immagine */
 .trend-hero .caption {
     position: absolute;
     bottom: 0;
     left: 0; right: 0;
-    padding: 16px 18px;
+    padding: 18px 20px;
 }
 .trend-hero .caption h4 {
-    margin: 0 0 6px;
+    margin: 0 0 8px;
     color: #fff;
-    font-size: .98rem;
-    line-height: 1.35;
-    text-shadow: 0 2px 6px rgba(0,0,0,.6);
+    font-size: .95rem;
+    font-weight: 600;
+    line-height: 1.4;
+    text-shadow: 0 2px 8px rgba(0,0,0,.7);
 }
 .trend-hero .caption .info {
     display: flex;
@@ -306,43 +340,125 @@ GLOBAL_CSS = """
     align-items: center;
 }
 .trend-hero .caption .info span {
-    font-size: .75rem;
+    font-size: .74rem;
     font-weight: 600;
 }
 .trend-hero .caption .info .src { color: var(--accent); }
 .trend-hero .caption .info .score {
-    background: rgba(255,255,255,.15);
+    background: rgba(255,255,255,.12);
+    backdrop-filter: blur(6px);
     color: var(--gold);
-    padding: 1px 8px;
-    border-radius: 6px;
+    padding: 2px 9px;
+    border-radius: 8px;
+    font-size: .72rem;
 }
 
-/* ── Section headers (titolo + linea gradiente) ───── */
+/* ── Section headers ──────────────────────────────── */
 .sec-head {
     display: flex;
     align-items: center;
     gap: 14px;
-    margin: 32px 0 18px;
+    margin: 36px 0 20px;
 }
-.sec-head h2 { margin: 0; font-size: 1.4rem; }
+.sec-head h2 {
+    margin: 0;
+    font-size: 1.35rem;
+    font-weight: 700;
+    letter-spacing: -.02em;
+}
 .sec-head .bar {
     flex: 1;
     height: 2px;
-    background: linear-gradient(90deg, var(--accent), transparent);
+    background: linear-gradient(90deg, var(--accent), rgba(100,255,218,.08));
     border-radius: 2px;
 }
 
-/* ── Stile search input ───────────────────────────── */
+/* ── Search input ─────────────────────────────────── */
 .stTextInput > div > div > input {
-    border-radius: 14px !important;
-    border: 2px solid rgba(100,255,218,.18) !important;
-    padding: 13px 18px !important;
+    border-radius: var(--radius-sm) !important;
+    border: 1.5px solid rgba(100,255,218,.15) !important;
+    background: rgba(17,24,39,.6) !important;
+    padding: 14px 20px !important;
     font-size: 1rem !important;
-    transition: border-color .3s !important;
+    color: var(--text-primary) !important;
+    transition: all var(--transition) !important;
 }
 .stTextInput > div > div > input:focus {
     border-color: var(--accent) !important;
-    box-shadow: 0 0 24px rgba(100,255,218,.1) !important;
+    box-shadow: 0 0 0 3px rgba(100,255,218,.08) !important;
+    background: rgba(17,24,39,.8) !important;
+}
+
+/* ── Card container (st.container border=True) ────── */
+[data-testid="stVerticalBlockBorderWrapper"] {
+    background: var(--bg-card) !important;
+    border: 1px solid var(--border) !important;
+    border-radius: var(--radius) !important;
+    box-shadow: var(--shadow) !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    margin-bottom: 20px !important;
+    transition: transform var(--transition), box-shadow var(--transition), border-color var(--transition) !important;
+}
+[data-testid="stVerticalBlockBorderWrapper"]:hover {
+    transform: translateY(-3px) !important;
+    box-shadow: var(--shadow-lg) !important;
+    border-color: var(--accent-glow) !important;
+}
+[data-testid="stVerticalBlockBorderWrapper"] > div {
+    background: transparent !important;
+    gap: 0 !important;
+}
+[data-testid="stVerticalBlockBorderWrapper"] > div > div {
+    background: transparent !important;
+}
+[data-testid="stVerticalBlockBorderWrapper"] [data-testid="stVerticalBlock"] {
+    background: transparent !important;
+}
+[data-testid="stVerticalBlockBorderWrapper"] [data-testid="stHorizontalBlock"] {
+    padding: 6px 20px 16px !important;
+    background: transparent !important;
+}
+
+/* ── Bottoni Streamlit (like/dislike/AI) ──────────── */
+[data-testid="stVerticalBlockBorderWrapper"] button {
+    border-radius: var(--radius-sm) !important;
+    border: 1px solid rgba(255,255,255,.08) !important;
+    background: rgba(255,255,255,.04) !important;
+    color: var(--text-secondary) !important;
+    font-weight: 500 !important;
+    transition: all var(--transition) !important;
+}
+[data-testid="stVerticalBlockBorderWrapper"] button:hover {
+    background: var(--accent-dim) !important;
+    border-color: var(--accent-glow) !important;
+    color: var(--accent) !important;
+}
+
+/* ── Sidebar ──────────────────────────────────────── */
+section[data-testid="stSidebar"] {
+    background: rgba(10,15,26,.95) !important;
+    border-right: 1px solid var(--border) !important;
+}
+section[data-testid="stSidebar"] .stRadio label {
+    transition: color var(--transition) !important;
+}
+section[data-testid="stSidebar"] .stRadio label:hover {
+    color: var(--accent) !important;
+}
+
+/* ── Bottone "Carica altre notizie" ───────────────── */
+.stButton > button {
+    border-radius: var(--radius-sm) !important;
+    font-weight: 600 !important;
+    transition: all var(--transition) !important;
+}
+
+/* ── Toast e messaggi ─────────────────────────────── */
+[data-testid="stToast"] {
+    background: var(--bg-card) !important;
+    border: 1px solid var(--accent-glow) !important;
+    border-radius: var(--radius-sm) !important;
 }
 </style>
 """
@@ -549,64 +665,73 @@ def _render_card(article, prefix, recommender=None):
     date_html = f'<span>📅 {pub}</span>' if pub else ""
     author_html = f'<span>✍️ {author}</span>' if author else ""
 
-    # Traduzione sintetica (se lingua selezionata)
-    translation_html = ""
+    # Traduzione titolo (se lingua selezionata)
+    title_display = article["title"]
+    translated_title_html = ""
     lang_label = st.session_state.get("translation_lang", "🇮🇹 Italiano (originale)")
     lang_code = AVAILABLE_LANGUAGES.get(lang_label, "")
     if lang_code:
-        translation = _generate_translation(
-            article["title"], article.get("summary", ""),
-            article["source"], article["category"], lang_code,
+        translated_title = _translate_title(article["title"], lang_code)
+        if translated_title:
+            translated_title_html = (
+                f'<p style="color:#38bdf8; font-size:0.85rem; margin:2px 0 6px; font-style:italic;">'
+                f'🌐 {translated_title}</p>'
+            )
+
+    # Card HTML — costruita senza indentazione per evitare blocchi codice Markdown
+    with st.container(border=True):
+        card_html = (
+            f'<img class="news-card-img" src="{article["image"]}"'
+            ' onerror="this.style.display=\'none\'"'
+            ' style="display:block;">'
+            '<div class="news-card-body">'
+            f'<h3>{title_display} {paid}</h3>'
+            f'{translated_title_html}'
+            '<div class="news-meta">'
+            f'<span class="badge-source">{article["source"]}</span>'
+            f'<span>📂 {article["category"]}</span>'
+            f'<span class="badge-trend">🔥 {article["trend_score"]:.0f}</span>'
+            f'{date_html}{author_html}'
+            '</div>'
+            f'<a class="btn-read" href="{article["link"]}" target="_blank">'
+            '🔗 Leggi l\'articolo completo</a>'
+            '</div>'
         )
-        if translation:
-            translation_html = f"""
-            <div style="background:rgba(56,189,248,0.05); border-left:3px solid #38bdf8;
-                        border-radius:0 12px 12px 0; padding:12px 16px; margin:10px 0 14px;">
-                <span style="font-size:0.72rem; font-weight:700; color:#38bdf8;
-                             text-transform:uppercase; letter-spacing:1px;">
-                    🌐 {lang_label.split(' ', 1)[-1]}
-                </span>
-                <p style="color:#94a3b8; font-size:0.85rem; line-height:1.6; margin:6px 0 0;">
-                    {translation}
-                </p>
-            </div>"""
+        st.markdown(card_html, unsafe_allow_html=True)
 
-    # Card HTML con tutti i dettagli
-    st.markdown(f"""
-    <div class="news-card">
-        <img class="news-card-img" src="{article['image']}"
-             onerror="this.style.display='none'">
-        <div class="news-card-body">
-            <h3>{article['title']} {paid}</h3>
-            <div class="news-meta">
-                <span class="badge-source">{article['source']}</span>
-                <span>📂 {article['category']}</span>
-                <span class="badge-trend">🔥 {article['trend_score']:.0f}</span>
-                {date_html}
-                {author_html}
-            </div>
-            <p class="news-card-summary">{article.get('summary', '')}</p>
-            {translation_html}
-            <a class="btn-read" href="{article['link']}" target="_blank">
-                🔗 Leggi l'articolo completo
-            </a>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
+        # Bottoni inside card container
+        c1, c2, c3 = st.columns([1, 1, 2])
+        with c1:
+            if st.button("👍", key=f"{prefix}_l_{article['id']}"):
+                if recommender:
+                    recommender.update_preference(article["id"], "like")
+                    st.session_state.user_preferences = recommender.user_preferences
+                st.toast("👍 Ti piace!")
+        with c2:
+            if st.button("👎", key=f"{prefix}_d_{article['id']}"):
+                if recommender:
+                    recommender.update_preference(article["id"], "dislike")
+                    st.session_state.user_preferences = recommender.user_preferences
+                st.toast("👎 Non ti piace!")
+        with c3:
+            show_key = f"show_{prefix}_ai_{article['id']}"
+            if st.button("🤖 Riassunto AI", key=f"btn_{prefix}_ai_{article['id']}"):
+                st.session_state[show_key] = not st.session_state.get(show_key, False)
+                st.rerun()
 
-    # Bottoni like/dislike — widget Streamlit nativi.
-    # Ogni bottone ha una key univoca composta da prefix + azione + ID articolo.
-    c1, c2, c3 = st.columns([1, 1, 6])
-    with c1:
-        if st.button("👍", key=f"{prefix}_l_{article['id']}"):
-            if recommender:
-                recommender.update_preference(article["id"], "like")
-                # Sincronizza le preferenze aggiornate con session_state
-                st.session_state.user_preferences = recommender.user_preferences
-            st.toast("👍 Ti piace!")
-    with c2:
-        if st.button("👎", key=f"{prefix}_d_{article['id']}"):
-            if recommender:
-                recommender.update_preference(article["id"], "dislike")
-                st.session_state.user_preferences = recommender.user_preferences
-            st.toast("👎 Non ti piace!")
+        # Mostra riassunto AI on-demand
+        show_key = f"show_{prefix}_ai_{article['id']}"
+        if st.session_state.get(show_key, False):
+            summary_text = article.get("summary", "")
+            if summary_text:
+                st.markdown(
+                    f'<div style="background:rgba(100,255,218,0.05); border-left:3px solid #64ffda;'
+                    f' border-radius:0 12px 12px 0; padding:12px 16px; margin:0 0 8px;">'
+                    f'<span style="font-size:0.72rem; font-weight:700; color:#64ffda;'
+                    f' text-transform:uppercase; letter-spacing:1px;">🤖 Riassunto AI</span>'
+                    f'<p style="color:#94a3b8; font-size:0.88rem; line-height:1.6; margin:6px 0 0;">'
+                    f'{summary_text}</p></div>',
+                    unsafe_allow_html=True,
+                )
+            else:
+                st.info("Nessun riassunto disponibile per questo articolo.")

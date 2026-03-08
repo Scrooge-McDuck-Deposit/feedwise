@@ -215,6 +215,160 @@ DEFAULT_SOURCES = {
     "Diritto e Legge": {
         "Altalex": {"url": "https://www.altalex.com/documents/rss", "type": "rss", "paid": False},
         "Il Quotidiano Giuridico": {"url": "https://www.quotidianogiuridico.it/feed/", "type": "rss", "paid": False},
+        "Filodiritto": {"url": "https://www.filodiritto.com/rss.xml", "type": "rss", "paid": False},
+        "Diritto.it": {"url": "https://www.diritto.it/feed/", "type": "rss", "paid": False},
+        "Studio Cataldi": {"url": "https://www.studiocataldi.it/rss.asp", "type": "rss", "paid": False},
+        "Lexology": {"url": "https://www.lexology.com/rss/AllRSS.xml", "type": "rss", "paid": False},
+    },
+
+    # ── Medicina e Sanità ──
+    "Medicina e Sanità": {
+        "The Lancet": {"url": "https://www.thelancet.com/rssfeed/lancet_online.xml", "type": "rss", "paid": False},
+        "BMJ": {"url": "https://www.bmj.com/rss/recent.xml", "type": "rss", "paid": False},
+        "Quotidiano Sanità": {"url": "https://www.quotidianosanita.it/feed/", "type": "rss", "paid": False},
+        "Medical News Today": {"url": "https://www.medicalnewstoday.com/newsfeeds/rss", "type": "rss", "paid": False},
+        "NEJM": {"url": "https://www.nejm.org/action/showFeed?jc=nejm&type=etoc&feed=rss", "type": "rss", "paid": False},
+        "JAMA Network": {"url": "https://jamanetwork.com/rss/site_3/67.xml", "type": "rss", "paid": False},
+        "Medscape": {"url": "https://www.medscape.com/cx/rssfeeds/2702.xml", "type": "rss", "paid": False},
+        "Pharmastar": {"url": "https://www.pharmastar.it/feed/rss", "type": "rss", "paid": False},
+        "Dottnet": {"url": "https://www.dottnet.it/feed/", "type": "rss", "paid": False},
+        "Nurse24": {"url": "https://www.nurse24.it/feed/", "type": "rss", "paid": False},
+        "Univadis IT": {"url": "https://www.univadis.it/rss", "type": "rss", "paid": False},
+    },
+
+    # ── Ingegneria e Costruzioni ──
+    "Ingegneria e Costruzioni": {
+        "Edilportale": {"url": "https://www.edilportale.com/rss/news.xml", "type": "rss", "paid": False},
+        "The Engineer": {"url": "https://www.theengineer.co.uk/feed/", "type": "rss", "paid": False},
+        "Engineering.com": {"url": "https://www.engineering.com/feed/", "type": "rss", "paid": False},
+        "IEEE Spectrum": {"url": "https://spectrum.ieee.org/feeds/feed.rss", "type": "rss", "paid": False},
+        "Ingegneri.info": {"url": "https://www.ingegneri.info/feed/", "type": "rss", "paid": False},
+        "Ingenio Web": {"url": "https://www.ingenio-web.it/feed/", "type": "rss", "paid": False},
+        "New Civil Engineer": {"url": "https://www.newcivilengineer.com/feed/", "type": "rss", "paid": False},
+        "Engineering News-Record": {"url": "https://www.enr.com/rss", "type": "rss", "paid": False},
+        "Ediltecnico": {"url": "https://www.ediltecnico.it/feed/", "type": "rss", "paid": False},
+    },
+
+    # ── Informatica e Data Science ──
+    "Informatica e Data Science": {
+        "InfoQ": {"url": "https://feed.infoq.com/", "type": "rss", "paid": False},
+        "Dev.to": {"url": "https://dev.to/feed", "type": "rss", "paid": False},
+        "The Register": {"url": "https://www.theregister.com/headlines.atom", "type": "rss", "paid": False},
+        "Towards Data Science": {"url": "https://towardsdatascience.com/feed", "type": "rss", "paid": False},
+        "KDnuggets": {"url": "https://www.kdnuggets.com/feed", "type": "rss", "paid": False},
+        "Analytics Vidhya": {"url": "https://www.analyticsvidhya.com/feed/", "type": "rss", "paid": False},
+        "DataCamp Blog": {"url": "https://www.datacamp.com/blog/rss.xml", "type": "rss", "paid": False},
+        "Machine Learning Mastery": {"url": "https://machinelearningmastery.com/feed/", "type": "rss", "paid": False},
+        "CSS-Tricks": {"url": "https://css-tricks.com/feed/", "type": "rss", "paid": False},
+        "Smashing Magazine": {"url": "https://www.smashingmagazine.com/feed/", "type": "rss", "paid": False},
+        "Real Python": {"url": "https://realpython.com/atom.xml", "type": "rss", "paid": False},
+        "HTML.it": {"url": "https://www.html.it/feed/", "type": "rss", "paid": False},
+    },
+
+    # ── Contabilità e Fiscalità ──
+    "Contabilità e Fiscalità": {
+        "FiscoOggi": {"url": "https://www.fiscooggi.it/rss.xml", "type": "rss", "paid": False},
+        "Informazione Fiscale": {"url": "https://www.informazionefiscale.it/feed", "type": "rss", "paid": False},
+        "Commercialista Telematico": {"url": "https://www.commercialistatelematico.com/feed", "type": "rss", "paid": False},
+        "Ipsoa Quotidiano": {"url": "https://www.ipsoa.it/rss", "type": "rss", "paid": False},
+        "Ecnews": {"url": "https://www.ecnews.it/feed/", "type": "rss", "paid": False},
+        "Fiscal Focus": {"url": "https://www.fiscal-focus.it/feed/", "type": "rss", "paid": False},
+        "Accounting Today": {"url": "https://www.accountingtoday.com/feed", "type": "rss", "paid": False},
+        "Journal of Accountancy": {"url": "https://www.journalofaccountancy.com/rss.xml", "type": "rss", "paid": False},
+    },
+
+    # ── Architettura e Urbanistica ──
+    "Architettura e Urbanistica": {
+        "ArchDaily": {"url": "https://www.archdaily.com/feed", "type": "rss", "paid": False},
+        "Dezeen": {"url": "https://www.dezeen.com/feed/", "type": "rss", "paid": False},
+        "Architetto.info": {"url": "https://www.architetto.info/feed/", "type": "rss", "paid": False},
+        "Domus": {"url": "https://www.domusweb.it/en.feed.xml", "type": "rss", "paid": False},
+        "Archiportale": {"url": "https://www.archiportale.com/rss/news.xml", "type": "rss", "paid": False},
+        "Abitare": {"url": "https://www.abitare.it/feed/", "type": "rss", "paid": False},
+        "Arch2o": {"url": "https://www.arch2o.com/feed/", "type": "rss", "paid": False},
+        "Architettura Italiana": {"url": "https://www.architettura-italiana.com/feed/", "type": "rss", "paid": False},
+        "Designboom Architecture": {"url": "https://www.designboom.com/architecture/feed/", "type": "rss", "paid": False},
+    },
+
+    # ── Marketing e Comunicazione ──
+    "Marketing e Comunicazione": {
+        "Ninja Marketing": {"url": "https://www.ninjamarketing.it/feed/", "type": "rss", "paid": False},
+        "HubSpot Blog": {"url": "https://blog.hubspot.com/rss.xml", "type": "rss", "paid": False},
+        "Search Engine Journal": {"url": "https://www.searchenginejournal.com/feed/", "type": "rss", "paid": False},
+        "Marketing Land": {"url": "https://martech.org/feed/", "type": "rss", "paid": False},
+        "Content Marketing Institute": {"url": "https://contentmarketinginstitute.com/feed/", "type": "rss", "paid": False},
+        "Social Media Today": {"url": "https://www.socialmediatoday.com/rss.xml", "type": "rss", "paid": False},
+        "Moz Blog": {"url": "https://moz.com/blog/feed", "type": "rss", "paid": False},
+        "Inside Marketing": {"url": "https://www.insidemarketing.it/feed/", "type": "rss", "paid": False},
+        "Engage.it": {"url": "https://www.engage.it/feed/", "type": "rss", "paid": False},
+    },
+
+    # ── Risorse Umane e Lavoro ──
+    "Risorse Umane e Lavoro": {
+        "AIDP": {"url": "https://www.aidp.it/feed/", "type": "rss", "paid": False},
+        "Il Sole 24 Ore Lavoro": {"url": "https://www.ilsole24ore.com/rss/norme-e-tributi.xml", "type": "rss", "paid": True},
+        "HR Morning": {"url": "https://www.hrmorning.com/feed/", "type": "rss", "paid": False},
+        "SHRM": {"url": "https://www.shrm.org/rss/pages/rss.aspx", "type": "rss", "paid": False},
+        "HR Online": {"url": "https://www.hronline.it/feed/", "type": "rss", "paid": False},
+        "Lavoro e Diritti": {"url": "https://www.lavoroediritti.com/feed", "type": "rss", "paid": False},
+        "Indeed Blog": {"url": "https://www.indeed.com/lead/feed", "type": "rss", "paid": False},
+        "Randstad Blog": {"url": "https://www.randstad.it/blog/feed/", "type": "rss", "paid": False},
+    },
+
+    # ── Ricerca Accademica e Paper ──
+    "Ricerca Accademica": {
+        "arXiv CS": {"url": "https://rss.arxiv.org/rss/cs", "type": "rss", "paid": False},
+        "arXiv AI": {"url": "https://rss.arxiv.org/rss/cs.AI", "type": "rss", "paid": False},
+        "arXiv Machine Learning": {"url": "https://rss.arxiv.org/rss/cs.LG", "type": "rss", "paid": False},
+        "arXiv Physics": {"url": "https://rss.arxiv.org/rss/physics", "type": "rss", "paid": False},
+        "arXiv Math": {"url": "https://rss.arxiv.org/rss/math", "type": "rss", "paid": False},
+        "arXiv Quantitative Biology": {"url": "https://rss.arxiv.org/rss/q-bio", "type": "rss", "paid": False},
+        "arXiv Economics": {"url": "https://rss.arxiv.org/rss/econ", "type": "rss", "paid": False},
+        "arXiv Statistics": {"url": "https://rss.arxiv.org/rss/stat", "type": "rss", "paid": False},
+        "PubMed": {"url": "https://pubmed.ncbi.nlm.nih.gov/rss/search/1/?term=science&format=abstract", "type": "rss", "paid": False},
+        "PLOS ONE": {"url": "https://journals.plos.org/plosone/feed/atom", "type": "rss", "paid": False},
+        "Nature News": {"url": "https://www.nature.com/nature.rss", "type": "rss", "paid": False},
+        "Science Magazine": {"url": "https://www.science.org/action/showFeed?type=etoc&feed=rss&jc=science", "type": "rss", "paid": False},
+        "SSRN": {"url": "https://papers.ssrn.com/sol3/Jeljour_results.cfm?form_name=journalBrowse&journal_id=&Network=no&lim=false&npage=1&SortOrder=ab_approval_date&stype=rn&feedtype=rss", "type": "rss", "paid": False},
+        "Frontiers": {"url": "https://www.frontiersin.org/feeds/allnews.xml", "type": "rss", "paid": False},
+        "Cell": {"url": "https://www.cell.com/cell/rss", "type": "rss", "paid": False},
+        "IEEE Xplore": {"url": "https://ieeexplore.ieee.org/rss/TOC7433297.XML", "type": "rss", "paid": False},
+        "ACM TechNews": {"url": "https://technews.acm.org/rss.xml", "type": "rss", "paid": False},
+        "Springer Open": {"url": "https://www.springeropen.com/latest.rss", "type": "rss", "paid": False},
+    },
+
+    # ── Psicologia e Scienze Sociali ──
+    "Psicologia e Scienze Sociali": {
+        "Psychology Today": {"url": "https://www.psychologytoday.com/intl/blog/feed", "type": "rss", "paid": False},
+        "British Psychological Society": {"url": "https://www.bps.org.uk/feeds/research-digest", "type": "rss", "paid": False},
+        "State of Mind": {"url": "https://www.stateofmind.it/feed/", "type": "rss", "paid": False},
+        "PsyPost": {"url": "https://www.psypost.org/feed/", "type": "rss", "paid": False},
+        "APA Monitor": {"url": "https://www.apa.org/monitor/rss", "type": "rss", "paid": False},
+    },
+
+    # ── Farmacia e Biotecnologie ──
+    "Farmacia e Biotecnologie": {
+        "Pharmastar": {"url": "https://www.pharmastar.it/feed/rss", "type": "rss", "paid": False},
+        "FiercePharma": {"url": "https://www.fiercepharma.com/rss.xml", "type": "rss", "paid": False},
+        "GEN - Genetic Engineering News": {"url": "https://www.genengnews.com/feed/", "type": "rss", "paid": False},
+        "BioPharma Dive": {"url": "https://www.biopharmadive.com/feeds/news/", "type": "rss", "paid": False},
+        "STAT News": {"url": "https://www.statnews.com/feed/", "type": "rss", "paid": False},
+    },
+
+    # ── Veterinaria e Scienze Animali ──
+    "Veterinaria": {
+        "La Settimana Veterinaria": {"url": "https://www.lasettimanavet.it/feed/", "type": "rss", "paid": False},
+        "Anmvi Oggi": {"url": "https://www.anmvioggi.it/rss.xml", "type": "rss", "paid": False},
+        "Veterinary Record": {"url": "https://bvajournals.onlinelibrary.wiley.com/action/showFeed?jc=20427670&type=etoc&feed=rss", "type": "rss", "paid": False},
+    },
+
+    # ── Agraria e Scienze Alimentari ──
+    "Agraria e Alimentazione": {
+        "AgroNotizie": {"url": "https://agronotizie.imagelinenetwork.com/rss/", "type": "rss", "paid": False},
+        "Informatore Agrario": {"url": "https://www.informatoreagrario.it/feed/", "type": "rss", "paid": False},
+        "Food Navigator": {"url": "https://www.foodnavigator.com/rss/", "type": "rss", "paid": False},
+        "Alimentazione e Salute": {"url": "https://www.alimentazionesana.it/feed/", "type": "rss", "paid": False},
+        "AgriCentral": {"url": "https://www.agricentral.it/feed/", "type": "rss", "paid": False},
     },
 }
 

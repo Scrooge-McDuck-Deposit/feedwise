@@ -18,6 +18,7 @@ from components.categories import display_categories
 from components.brainless import brainless_page
 from components.preferences import preferences_page
 from components.custom_sections import custom_section_page
+from components.chatbot import render_chatbot
 
 
 # ── Configurazione pagina ────────────────────────────────────────────
@@ -102,6 +103,8 @@ with st.sidebar:
         key="translation_lang",
     )
 
+    st.markdown("---")
+    render_chatbot()
     st.markdown("---")
     st.caption("Made with ❤️ using Streamlit")
 
