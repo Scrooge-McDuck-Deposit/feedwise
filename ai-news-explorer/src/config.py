@@ -2,10 +2,10 @@
 
 class Config:
     API_KEYS = {
-        "twitter": "YOUR_TWITTER_API_KEY",
-        "facebook": "YOUR_FACEBOOK_API_KEY",
-        "instagram": "YOUR_INSTAGRAM_API_KEY",
-        "tiktok": "YOUR_TIKTOK_API_KEY"
+        "twitter": "",
+        "facebook": "",
+        "instagram": "",
+        "tiktok": "",
     }
     
     DEFAULT_SOURCES = {

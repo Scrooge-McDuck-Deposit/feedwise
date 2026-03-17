@@ -25,7 +25,9 @@ def create_bubble_chart(df, max_bubbles=5):
     fig.update_layout(
         plot_bgcolor="rgba(0,0,0,0)",
         paper_bgcolor="rgba(0,0,0,0)",
-        font=dict(color="#333"),
-        height=450
+        font=dict(color="#e2e8f0"),
+        height=450,
+        xaxis=dict(gridcolor="rgba(255,255,255,0.06)"),
+        yaxis=dict(gridcolor="rgba(255,255,255,0.06)"),
     )
     return fig

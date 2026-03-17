@@ -12,7 +12,6 @@ autore, immagine, riassunto e link all'articolo originale.
 L'utente può dare like/dislike per influenzare l'algoritmo.
 """
 import streamlit as st
-import streamlit.components.v1 as stc
 import hashlib
 import random
 from agent.recommender import RecommenderAgent, CATEGORY_IMAGES
@@ -478,9 +477,6 @@ def home_page():
     corrente. Ogni click su "Carica altre notizie" incrementa il contatore
     e forza un rerun con st.rerun().
     """
-    # Inietta CSS una volta sola all'inizio della pagina
-    st.markdown(GLOBAL_CSS, unsafe_allow_html=True)
-
     st.title("🌐 AI News Trend Explorer")
     st.caption("Il tuo aggregatore intelligente di notizie · powered by AI")
 

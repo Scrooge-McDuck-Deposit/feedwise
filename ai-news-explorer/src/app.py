@@ -12,8 +12,9 @@ Streamlit esegue questo file dall'alto verso il basso ad ogni
 interazione dell'utente (click, input, ecc.). Lo stato persiste
 tra i rerun grazie a st.session_state.
 """
+import os
 import streamlit as st
-from components.home import home_page
+from components.home import home_page, GLOBAL_CSS
 from components.categories import display_categories
 from components.brainless import brainless_page
 from components.preferences import preferences_page
@@ -38,6 +39,15 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded"
 )
+
+
+# ── Stili globali (dark theme + readability) ─────────────────────────
+# Inietta il CSS su TUTTE le pagine per garantire un look uniforme.
+st.markdown(GLOBAL_CSS, unsafe_allow_html=True)
+
+_css_path = os.path.join(os.path.dirname(__file__), "styles", "custom.css")
+with open(_css_path, encoding="utf-8") as _f:
+    st.markdown(f"<style>{_f.read()}</style>", unsafe_allow_html=True)
 
 
 # ── Inizializzazione stato sessione ──────────────────────────────────

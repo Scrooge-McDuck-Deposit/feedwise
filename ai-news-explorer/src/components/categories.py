@@ -13,7 +13,7 @@ st.session_state.selected_category per persistere tra rerun.
 import streamlit as st
 from agent.recommender import RecommenderAgent, CATEGORY_IMAGES
 from feeds.source_registry import load_sources, SourceRegistry
-from components.home import AVAILABLE_LANGUAGES, _translate_title
+from components.home import _render_card
 
 
 def display_categories():
@@ -133,81 +133,9 @@ def _show_category_articles(category):
         st.warning(f"Nessun articolo per '{category}'. I feed potrebbero non essere raggiungibili.")
         return
 
-    # Renderizza ogni articolo come card HTML + bottoni Streamlit
+# Renderizza ogni articolo usando il renderer condiviso
     for _, article in all_articles.iterrows():
-        with st.container(border=True):
-            pub = article.get("published", "")
-            author = article.get("author", "")
-            date_html = f'<span style="color:#94a3b8;">📅 {pub}</span>' if pub else ""
-            author_html = f'<span style="color:#ccd6f6;">✍️ {author}</span>' if author else ""
-
-            # Traduzione titolo
-            translated_title_html = ""
-            lang_label = st.session_state.get("translation_lang", "🇮🇹 Italiano (originale)")
-            lang_code = AVAILABLE_LANGUAGES.get(lang_label, "")
-            if lang_code:
-                translated_title = _translate_title(article["title"], lang_code)
-                if translated_title:
-                    translated_title_html = (
-                        f'<p style="color:#38bdf8; font-size:0.85rem; margin:2px 0 6px; font-style:italic;">'
-                        f'🌐 {translated_title}</p>'
-                    )
-
-            card_html = (
-                f'<img src="{article["image"]}" style="width:100%; max-height:300px; object-fit:cover; display:block;"'
-                ' onerror="this.style.display=\'none\'">'
-                '<div style="padding:20px 22px 18px;">'
-                f'<h3 style="margin:0 0 6px; font-size:1.12rem; color:#e2e8f0;">{article["title"]}</h3>'
-                f'{translated_title_html}'
-                '<div style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:10px; font-size:.8rem; color:#64748b;">'
-                f'<span style="background:rgba(100,255,218,.12); color:#64ffda;'
-                f' padding:2px 10px; border-radius:10px; font-weight:700;">{article["source"]}</span>'
-                f'<span style="background:rgba(251,191,36,.12); color:#fbbf24;'
-                f' padding:2px 9px; border-radius:8px; font-weight:700;">🔥 {article["trend_score"]:.0f}</span>'
-                f'{date_html}{author_html}</div>'
-                f'<a href="{article["link"]}" target="_blank" style="'
-                'display:inline-block; background:linear-gradient(135deg,#64ffda,#00bfa5);'
-                ' color:#0a192f !important; padding:9px 22px; border-radius:10px;'
-                ' text-decoration:none; font-weight:700; font-size:.86rem;'
-                '">🔗 Leggi l\'articolo completo</a>'
-                '</div>'
-            )
-            st.markdown(card_html, unsafe_allow_html=True)
-
-            # Bottoni inside card container
-            c1, c2, c3 = st.columns([1, 1, 2])
-            with c1:
-                if st.button("👍", key=f"cat_like_{article['id']}"):
-                    recommender.update_preference(article["id"], "like")
-                    st.session_state.user_preferences = recommender.user_preferences
-                    st.toast("👍 Like!")
-            with c2:
-                if st.button("👎", key=f"cat_dislike_{article['id']}"):
-                    recommender.update_preference(article["id"], "dislike")
-                    st.session_state.user_preferences = recommender.user_preferences
-                    st.toast("👎 Dislike!")
-            with c3:
-                show_key = f"show_cat_ai_{article['id']}"
-                if st.button("🤖 Riassunto AI", key=f"btn_cat_ai_{article['id']}"):
-                    st.session_state[show_key] = not st.session_state.get(show_key, False)
-                    st.rerun()
-
-            # Mostra riassunto AI on-demand
-            show_key = f"show_cat_ai_{article['id']}"
-            if st.session_state.get(show_key, False):
-                summary_text = article.get("summary", "")
-                if summary_text:
-                    st.markdown(
-                        f'<div style="background:rgba(100,255,218,0.05); border-left:3px solid #64ffda;'
-                        f' border-radius:0 12px 12px 0; padding:12px 16px; margin:0 0 8px;">'
-                        f'<span style="font-size:0.72rem; font-weight:700; color:#64ffda;'
-                        f' text-transform:uppercase; letter-spacing:1px;">🤖 Riassunto AI</span>'
-                        f'<p style="color:#94a3b8; font-size:0.88rem; line-height:1.6; margin:6px 0 0;">'
-                        f'{summary_text}</p></div>',
-                        unsafe_allow_html=True,
-                    )
-                else:
-                    st.info("Nessun riassunto disponibile per questo articolo.")
+        _render_card(article, "cat", recommender)
 
     # Paginazione: bottone "Carica altre notizie"
     total_available = recommender.get_total_articles_count(category)
